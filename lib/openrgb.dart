@@ -1,5 +1,6 @@
 library openrgb;
 
+import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'dart:async';
@@ -21,7 +22,13 @@ class OpenRGBClient {
     
     socket.cast<List<int>>().pipe(streamBuffer);
     
-    return OpenRGBClient(socket, streamBuffer);
+    var client =  OpenRGBClient(socket, streamBuffer);
+    var nameBytes = AsciiCodec().encode('OpenRGB-dart');
+    nameBytes.add(0);//null terminate
+
+    client.send(CommandId.setClientName, nameBytes); 
+
+    return client;
   }
 
   Future send(int commandId, Uint8List data, {int deviceId = 0}) async {
@@ -36,7 +43,7 @@ class OpenRGBClient {
     await _socket.flush();
   }
   
-  Future<Uint8List> readPacket() async
+  Future<Uint8List> receive() async
   {
     var headerBytes = Uint8List.fromList(await  _streamBuffer.read(16));
 
