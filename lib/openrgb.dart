@@ -28,7 +28,7 @@ class OpenRGBClient {
     var escapedBytes = Uint8List(nameBytes.length + 1);
 
     escapedBytes.setRange(0, nameBytes.length, nameBytes);
-    escapedBytes[escapedBytes.length] = 0;
+    escapedBytes[escapedBytes.length - 1] = 0;
     await client.send(CommandId.setClientName, escapedBytes); 
 
     return client;
